@@ -1,9 +1,10 @@
 from tkinter import filedialog as FileDialog
 from gramaticas import Gramatica
 from nodo import gramaticas
+from gramaticasE import GramaticaE
 gramaticasL = []
-afd = []
 gramaticasS = gramaticas()
+gramaticasE = [] 
 def test():
     fichero = FileDialog.askopenfilename(title="Abrir un fichero")
     #print (fichero)
@@ -14,13 +15,14 @@ def pedirOpcion ():
   opcion = 0
   while (not correcto):
     try:
-     opcion = int(input( "Menu: \n 1) Cargar Archivo: \n 2)Desplegar listas ordenadas \n 3) Desplegar búsquedas: \n 4) Desplegar todas: \n5) Desplegar todos los archivos: \n 6) Salir \n-->"))
+     opcion = int(input( "Menu: \n 1)Cargar Archivo: \n 2)Informacion General \n 3)Generar autómata de pila equivalente: \n 4)Reporte Recorrido: \n 5)Reporte en tabla: \n 6) Salir \n-->"))
      correcto = True
     except ValueError:
       print('Error, introduce un numero entero')
   return opcion
 
 def Menu(): 
+    global gramaticasL
     opcion = 0
     salir = False
     while not salir: 
@@ -30,74 +32,50 @@ def Menu():
             ruta = test()
             prueba(ruta)
         elif opcion == 2: 
-            a = "Mostrar informacion general"
+            id = nombreOpciones()
+            entrad = "aaaaaazba"
+            for grm in gramaticasL: 
+                if grm.getID() == id:
+                    grm.informacionGeneral()
+                    # grm.generaTablas(entrad)
+                    grm.generRecorridoImagenes(entrad)
+                    break
+                else: 
+                    print("No se encontro la gramatica")
         elif opcion == 3: 
-            a = "ingresar cadena: "
+            id = nombreOpciones()
+            for grm in gramaticasL: 
+                if grm.getID() == id:
+                    grm.pilaE()
+                    break
+                else: 
+                    print("No se encontro la gramatica")
+        elif opcion == 4: 
+            id = nombreOpciones()
+            cadena = str(input("Ingrese la cadena a Evaluar: \n --->"))
+            for grm in gramaticasL: 
+                if grm.getID() == id:
+                    grm.generaTablas(cadena.strip())
+                    break
+                else: 
+                    print("No se encontro la gramatica")
+        elif opcion == 5: 
+            id = nombreOpciones()
+            cadena = str(input("Ingrese la cadena a Evaluar: \n --->"))
+            for grm in gramaticasL: 
+                if grm.getID() == id:
+                    grm.generRecorridoImagenes(cadena.strip())
+                    break
+                else: 
+                    print("No se encontro la gramatica")
         
-def leerLine(lineaE,cont_lineas): 
-    global gramaticas
-    linea = str(lineaE)
-    print(linea)
-    tamañoEntrada = len(linea)
-    cont = 0
-    tmp = []
-    if cont_lineas == 1: 
-        # concatenacion = ""
-        while(cont<tamañoEntrada):
-            chart = linea[cont]
-            charti = ord(chart)
-            cont += 1
-        print("nombre")
-    
-    elif cont_lineas == 2: 
-        # concatenacion = ""
-        terminales = []
-        noTerminales = []
-        So = ""
-        estado = 0
-        while(cont<tamañoEntrada):
-            chart = linea[cont]
-            charti = ord(chart)
-            if estado == 0: 
-                if chart.isupper(): 
-                    noTerminales.append(chart)
-                    cont +=1 
-                elif chart=="," or charti==32: 
-                    cont +=1  
-                elif chart == ";" :
-                    print("Terminales")
-                    estado == 1
-           
-            elif estado == 1: 
-                if chart.isupper(): 
-                    terminales.append(chart)
-                    cont +=1 
-                elif chart=="," or charti==32: 
-                    cont +=1 
-                elif chart == ";":
-                    print("Terminales")
-                cont +=1  
-           
-            elif estado == 2: 
-
-                if charti ==32: 
-                    cont+1
-                elif chart.isupper(): 
-                    So+=chart
-                elif chart == "\n": 
-                    print("Fin")
-       
-    elif cont_lineas >2: 
-        
-        print("producciones")
-
 def prueba(ruta): 
     archivo = open(ruta)
     indicadorLinea = 1
     Nombre = ""
     global terminales
     global noTerminales
-    # noTerminales = []
+    global gramaticasL
     So = ""
     producciones = []
     temp = []
@@ -108,90 +86,101 @@ def prueba(ruta):
         if chart == "*": 
             no_tipo2 = True
             save = True
-            for item in producciones: 
-
-                if item[0] in noTerminales :
-                    print("si")
-                    if len(item[1])>1: 
-                        print("mayor que 1: ",item[1].split(" "))
-                    else: 
-                        if item[1] in noTerminales: 
-                            no_tipo2 = True
-                        elif item[1] in terminales: 
-                            no_tipo2 = False
-                            break
-                else: 
-                    print("que paso master xD")
             if save: 
-                temp.append(Gramatica(Nombre,noTerminales,terminales,So,producciones))
-                for grm in temp: 
-                    if grm.getNombre() == Nombre:
-                        grm.informacionGeneral(Nombre) 
-                        break
+                import copy
+                id = generaID()
+                # print("Producciones",producciones)
+                produccionesS = producciones.copy()
+                # noTerminales.append("#")
+                # print("No Terminales: ",noTerminales)
+                terminalesS = terminales.copy()
+                noTerminalesS = noTerminales.copy()
+                gramaticasL.append(copy.deepcopy(Gramatica(id,Nombre,noTerminalesS,terminalesS,So,produccionesS)))
                 no_gramatica +=1
             else: 
                 print("")
+            indicadorLinea = 1
             Nombre = ""
             terminales.clear()
             noTerminales.clear()
             producciones.clear()
             So = ""
-            indicadorLinea == 1
         else: 
             if indicadorLinea == 1: 
                 # concatenacion = ""
                 Nombre += linea.strip() 
+                # print("Nombre ",Nombre)
                 # indicadorLinea +=1 
+                indicadorLinea +=1
 
-            elif indicadorLinea == 2: 
-                tamañoEntrada = len(linea)
-                cont = 0
-                estado = 0                
+            elif indicadorLinea == 2:            
                 y = linea.split(";")
-                x = y[0].split(",")
-                terminales = y[0].split(",")
-                x1 = y[1].split(",")
-                noTerminales = y[1].split(",")
-                print("noTerminales ",noTerminales)
+                noTerminales = y[0].split(",")
+                terminales = y[1].split(",")
+                # print("noTerminales ",noTerminales)
                 So += y[2]
-                print("X: ",So)
-                while(cont<tamañoEntrada):
-                    chart = linea[cont]
-                    charti = ord(chart)
+                indicadorLinea +=1
 
-                    if estado == 0: 
-                        if chart.isupper(): 
-                            noTerminales.append(chart)
-                            cont +=1 
-                        elif chart=="," or charti==32: 
-                            cont +=1  
-                        elif chart == ";" :
-                            estado =1 
-                            cont += 1               
-                    elif estado == 1: 
-
-                        if chart !=",": 
-                            terminales.append(chart)
-                            cont +=1 
-                        else: 
-                            if chart=="," or charti==32: 
-                                cont +=1 
-                            elif chart == ";":
-                                estado = 2 
-                                cont +=1  
-                
-                    elif estado == 2: 
-                        if charti ==32: 
-                            cont+1
-                        elif chart !=",": 
-                            a=chart
-                            cont+=1
-                        elif chart == "\n": 
-                            print("Fin")
-            
             elif indicadorLinea >2: 
                 producciones.append(linea.split("->"))
-        indicadorLinea +=1        
+                indicadorLinea +=1        
 
+def nombreOpciones(): 
+    print("*****Gramaticas****")
+    formulario = ""
+    for grm in gramaticasL: 
+        formulario += str(grm.getID())+" "+grm.getNombre() + " \n"
+    formulario += " \n -->"
+    gramatica = int(input(formulario))
+    return gramatica
+
+def generaID(): 
+    id = 1 
+    if len(gramaticasL) == 0: 
+        id = 1 
+        return id
+    else: 
+        pos = len(gramaticasL)-1
+        id = gramaticasL[pos].getID() + 1
+        return id
+
+def regular(): 
+    terminales = []
+    noTerminales = []
+    producciones = []
+    regular = True
+    error = ""
+    for elemen in producciones: 
+        if len(elemen) >0:
+            if len(elemen) == 1: 
+                #a
+                if elemen in terminales: 
+                    regular = True
+                else: 
+                    regular = False
+                    break 
+            elif len(elemen) == 2: 
+                print("Mayor 2")
+                pro = elemen.split(" ")  
+                # a A ; pro -> ['a','A']
+                #aA 
+                if pro[0] in terminales: #pro[0] = a  pro[1] = A 
+                    if pro[0] in terminales and pro[1] in noTerminales: 
+                        regular = True
+                    else : 
+                        regular = False
+                        break
+                #Aa 
+                if pro[0] in noTerminales: 
+                    if pro[0] in noTerminales and pro[1] in  terminales: 
+                        regular = True
+                    else : 
+                        regular = False
+                        break
+            elif len(elemen) >2: 
+                print("No es regular, entonces es libre de contexto")
+                regular = False
+                break
+        
 Menu()
     
