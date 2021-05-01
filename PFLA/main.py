@@ -15,7 +15,7 @@ def pedirOpcion ():
   opcion = 0
   while (not correcto):
     try:
-     opcion = int(input( "Menu: \n 1)Cargar Archivo: \n 2)Informacion General \n 3)Generar autómata de pila equivalente: \n 4)Reporte Recorrido: \n 5)Reporte en tabla: \n 6) Salir \n-->"))
+     opcion = int(input( "Menu: \n 1)Cargar Archivo: \n 2)Informacion General \n 3)Generar autómata de pila equivalente: \n 4)Reporte en tabla: \n 5)Reporte en Recorrido: \n 6) Gramaticas no aceptadas \n 7) Salir \n-->"))
      correcto = True
     except ValueError:
       print('Error, introduce un numero entero')
@@ -33,42 +33,125 @@ def Menu():
             prueba(ruta)
         elif opcion == 2: 
             id = nombreOpciones()
-            entrad = "aaaaaazba"
             for grm in gramaticasL: 
                 if grm.getID() == id:
                     grm.informacionGeneral()
-                    # grm.generaTablas(entrad)
-                    grm.generRecorridoImagenes(entrad)
                     break
                 else: 
                     print("No se encontro la gramatica")
         elif opcion == 3: 
+            
             id = nombreOpciones()
             for grm in gramaticasL: 
                 if grm.getID() == id:
                     grm.pilaE()
                     break
                 else: 
-                    print("No se encontro la gramatica")
+                    pass
         elif opcion == 4: 
+        
             id = nombreOpciones()
             cadena = str(input("Ingrese la cadena a Evaluar: \n --->"))
+            find = False
             for grm in gramaticasL: 
                 if grm.getID() == id:
-                    grm.generaTablas(cadena.strip())
+                    print("1 - Evaluar GLC simple\n2 - Evaluar GLC con ambigüedad")
+                    opc = input(" Selecciona una opción: ")
+                    if opc == "1":
+                        grm.generaTablas(cadena.strip())
+                        pass
+                    elif opc == "2":
+                        grm.generaTablas2(cadena.strip())
+                    else:
+                        print("Selección inválida")
+                    find = True
                     break
-                else: 
-                    print("No se encontro la gramatica")
+            if not find: 
+                print("No se encontro la gramatica")            
+                
         elif opcion == 5: 
             id = nombreOpciones()
             cadena = str(input("Ingrese la cadena a Evaluar: \n --->"))
+            find = False
             for grm in gramaticasL: 
                 if grm.getID() == id:
-                    grm.generRecorridoImagenes(cadena.strip())
+                    print("1 - Evaluar GLC simple\n2 - Evaluar GLC con ambigüedad")
+                    opc = input(" Selecciona una opción: ")
+                    if opc == "1":
+                        grm.generRecorridoImagenes(cadena.strip())
+                        pass
+                    elif opc == "2":
+                        grm.generaRecorrido2(cadena.strip())
+                    else:
+                        print("Selección inválida")
+                    find = True
                     break
-                else: 
-                    print("No se encontro la gramatica")
-        
+            if not find: 
+                print("No se encontro la gramatica")  
+        elif opcion == 6: 
+            if len(gramaticasE)>0: 
+                web = True
+                if web: 
+                    import webbrowser
+                    f = open("Regulares.html",mode="w", encoding="utf-8")
+                    mensaje = """<!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                        <link href="estilo1.css" rel="stylesheet" >
+                        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+                        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+                        <title>Aplicacion de Prueba</title>
+                        </head>
+                        <body>
+                        <div class="sidenav">
+                        <div class="login-main-text">
+                            <p >GRMATICAS Regulares</p>
+                        </div>
+                        </div>
+                        <div class="main">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="login-form">
+                            <h1>Mostrando</h1>
+                            <form>
+                        """
+                    for grmR in gramaticasE: 
+                        mensaje +=""" 
+                                <div class="form-group">
+                                    <label> NOMBRE:  </label>
+                                    <input id = "username"type="text" class="form-control" value =  """ + str(grmR.getNombre())+  """ onkeydown="return false" >  
+                                </div>   
+                                <div class="form-group">
+                                    <label> Terminales:  </label> 
+                                    <input id = "username"type="text" class="form-control" value =  {""" + str((",".join(grmR.get_Teminales())) + "}")+  """  onkeydown="return false" >                                          
+                                </div>                                 
+                                <div class="form-group">
+                                    <label> Error:  </label>
+                                    <input id = "username"type="text" class="form-control" value =  """ + str(grmR.getError())+  """ onkeydown="return false" >  
+                                </div>  
+                                <br>
+                                <br> 
+                        """ 
+              
+                    mensaje += """  
+                        <h1>Representacion Grafica SVG</h1>                
+                        </form>
+                        </div>
+                        </div>
+                        </div>
+                        </body>
+                        </html>  
+                    """ 
+                    f.write(mensaje)
+                    f.close()    
+                    webbrowser.open_new_tab("Regulares.html")              
+
+            else: 
+                print("Todas son de tipo 2")   
+
+        elif opcion == 7: 
+            salir = True        
+
 def prueba(ruta): 
     archivo = open(ruta)
     indicadorLinea = 1
@@ -86,7 +169,40 @@ def prueba(ruta):
         if chart == "*": 
             no_tipo2 = True
             save = True
-            if save: 
+            regular = True
+
+            for elemen in producciones: 
+                if len(elemen[1]) ==1:
+                    if len(elemen) == 1: 
+                        #a
+                        if elemen in terminales: 
+                            regular = True
+                        else: 
+                            regular = False
+                            break 
+                else: 
+                    pro = elemen[1].split(" ")  
+                    if len(pro) == 2: 
+                        # a A ; pro -> ['a','A']
+                        #aA 
+                        if pro[0] in terminales: #pro[0] = a  pro[1] = A 
+                            if pro[0] in terminales and pro[1] in noTerminales: 
+                                regular = True
+                            else : 
+                                regular = False
+                                break
+                        #Aa 
+                        elif pro[0] in noTerminales: 
+                            if pro[0] in noTerminales and pro[1] in  terminales: 
+                                regular = True
+                            else : 
+                                regular = False
+                                break
+                    elif len(pro) >2: 
+                        regular = False
+                        break
+
+            if not regular:                 
                 import copy
                 id = generaID()
                 # print("Producciones",producciones)
@@ -98,13 +214,16 @@ def prueba(ruta):
                 gramaticasL.append(copy.deepcopy(Gramatica(id,Nombre,noTerminalesS,terminalesS,So,produccionesS)))
                 no_gramatica +=1
             else: 
-                print("")
+                gramaticasE.append(copy.deepcopy(GramaticaE(id,Nombre,noTerminales.copy(),terminales.copy(),So,producciones.copy(),"Es regular")))
+
+
             indicadorLinea = 1
             Nombre = ""
             terminales.clear()
             noTerminales.clear()
             producciones.clear()
             So = ""
+            print("Almacenadas")
         else: 
             if indicadorLinea == 1: 
                 # concatenacion = ""
