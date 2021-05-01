@@ -1109,9 +1109,8 @@ class Gramatica:
                                 camino.pop(tamanio-i)
                             newSearch = True
                         else:
-                            print("Error sintactico")
                             seAcepta = False
-                            ERROR = "Error sintactico en la escritura de gramatica"
+                            ERROR = "LO QUE SE ESTA LEYENDO: "+char+" NO ES IGUAL A LA CIMA DE LA PILA: " + pilaTop + " SE ESPERABA: "+pilaTop +" EN POS: " +str(cont)
                             break
                     else: 
                         find = False
@@ -1174,9 +1173,8 @@ class Gramatica:
                                     camino.pop(tamanio-i)
                                 newSearch = True
                             else:
-                                print("Error sintactico")
                                 seAcepta = False
-                                ERROR = "Error sintactico en la escritura de gramatica"
+                                ERROR = "LO QUE SE ESTA LEYENDO: "+char+" NO ES IGUAL A LA CIMA DE LA PILA: " + pilaTop + " SE ESPERABA: "+pilaTop +" EN POS: " +str(cont)
                                 break
 
                 elif pilaTop in self.terminales: 
@@ -1217,16 +1215,9 @@ class Gramatica:
                                 camino.pop(tamanio-i)
                             newSearch = True
                         else:
-                            print("Pila top: ",pilaTop)
-                            print("char: ",char)
-                            print("Error no encontrado")
                             seAcepta = False 
                             ERROR = "LO QUE SE ESTA LEYENDO: "+char+" NO ES IGUAL A LA CIMA DE LA PILA: " + pilaTop + " SE ESPERABA: "+pilaTop +" EN POS: " +str(cont)
                             # ERROR += concatenarError
-                            print("Error, ",ERROR)
-                            print("Tabla")
-                            for table in tabla: 
-                                print(" | ".join(table))
                             break 
 
                 elif pilaTop =="#" and char =="#":
@@ -1269,7 +1260,6 @@ class Gramatica:
                             camino.pop(tamanio-i)
                         newSearch = True
                     else:
-                        print("Error en, ",char," pos: ",cont," no encontrado")
                         ERROR = "Error en, "+char+" pos: "+str(cont)+" no encontrado"
                         seAcepta = False
                         for table in tabla: 
@@ -1413,7 +1403,7 @@ class Gramatica:
                         else:
                             # print("Error sintactico")
                             seAcepta = False
-                            ERROR = "Error sintactico en la escritura de gramatica"
+                            ERROR = "LO QUE SE ESTA LEYENDO: "+char+" NO ES IGUAL A LA CIMA DE LA PILA: " + pilaTop + " SE ESPERABA: "+pilaTop +" EN POS: " +str(cont)
                             break
                     else: 
                         find = False
@@ -1478,7 +1468,7 @@ class Gramatica:
                             else:
                                 # print("Error sintactico")
                                 seAcepta = False
-                                ERROR = "Error sintactico en la escritura de gramatica"
+                                ERROR = "LO QUE SE ESTA LEYENDO: "+char+" NO ES IGUAL A LA CIMA DE LA PILA: " + pilaTop + " SE ESPERABA: "+pilaTop +" EN POS: " +str(cont)
                                 break
 
                 elif pilaTop in self.terminales: 
